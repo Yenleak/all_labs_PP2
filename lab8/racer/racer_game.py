@@ -6,7 +6,7 @@ pygame.init()
 
 
 FPS = 60
-FramePerSec = pygame.time.Clock()
+clock = pygame.time.Clock()
 
 # Түстер
 BLUE  = (0, 0, 255)
@@ -16,10 +16,10 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 # Экран өлшемдері
-SCREEN_WIDTH = 400
-SCREEN_HEIGHT = 600
+WIDTH = 400
+HEIGHT = 600
 
-
+#жылдамдық, ұпай, жиналған тиындар саны 
 SPEED = 5
 SCORE = 0
 COINS_COLLECTED = 0
@@ -33,8 +33,8 @@ game_over = font.render("Game Over", True, BLACK)
 background = pygame.image.load("C:/Users/User/Downloads/AnimatedStreet.png")
 
 
-DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-DISPLAYSURF.fill(WHITE)
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen.fill(WHITE)
 pygame.display.set_caption("Car Game by Yenleak")
 
 # Дыбыс
@@ -46,7 +46,7 @@ pygame.mixer.music.play(-1)
 crash_sound = pygame.mixer.Sound("C:/Users/User/Desktop/LAB_PP2/labs/lab8/racer/crash.wav")
 
 # Монета суреті
-coin_image = pygame.image.load("C:/Users/User/Downloads/Coin.png")
+coin_image = pygame.image.load("C:/Users/User/Downloads/Coin.jpg")
 coin_image = pygame.transform.scale(coin_image, (30, 30))
 
 # Жау 
@@ -55,15 +55,15 @@ class Enemy(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.image.load("C:/Users/User/Downloads/Enemy.png")
         self.rect = self.image.get_rect()
-        self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
+        self.rect.center = (random.randint(40, WIDTH - 40), 0)
 
     def move(self):
         global SCORE
         self.rect.move_ip(0, SPEED)
-        if self.rect.top > SCREEN_HEIGHT:
+        if self.rect.top > HEIGHT:
             SCORE += 1
             self.rect.top = 0
-            self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
+            self.rect.center = (random.randint(40, WIDTH - 40), 0)
 
 # Ойыншы
 class Player(pygame.sprite.Sprite):
@@ -77,7 +77,7 @@ class Player(pygame.sprite.Sprite):
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[K_LEFT] and self.rect.left > 0:
             self.rect.move_ip(-5, 0)
-        if pressed_keys[K_RIGHT] and self.rect.right < SCREEN_WIDTH:
+        if pressed_keys[K_RIGHT] and self.rect.right < WIDTH:
             self.rect.move_ip(5, 0)
 
 # Монета 
@@ -86,15 +86,15 @@ class Coin(pygame.sprite.Sprite):
         super().__init__()
         self.image = coin_image
         self.rect = self.image.get_rect()
-        self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), random.randint(-100, -30))
+        self.rect.center = (random.randint(40, WIDTH - 40), random.randint(-100, -30))
 
     def move(self):
         self.rect.move_ip(0, SPEED // 2)
-        if self.rect.top > SCREEN_HEIGHT:
+        if self.rect.top > HEIGHT:
             self.respawn()
 
     def respawn(self):
-        self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), random.randint(-100, -30))
+        self.rect.center = (random.randint(40, WIDTH - 40), random.randint(-100, -30))
 
 
 P1 = Player()
@@ -127,18 +127,18 @@ while True:
             sys.exit()
 
     # Фон
-    DISPLAYSURF.blit(background, (0, 0))
+    screen.blit(background, (0, 0))
 
     #ұпайлар
     score_display = font_small.render(f"Score: {SCORE}", True, BLACK)
-    DISPLAYSURF.blit(score_display, (10, 10))
+    screen.blit(score_display, (10, 10))
 
     coin_display = font_small.render(f"Coins: {COINS_COLLECTED}", True, BLACK)
-    DISPLAYSURF.blit(coin_display, (SCREEN_WIDTH - 100, 10))
+    screen.blit(coin_display, (WIDTH - 100, 10))
 
     
     for entity in all_sprites:
-        DISPLAYSURF.blit(entity.image, entity.rect)
+        screen.blit(entity.image, entity.rect)
         entity.move()
 
     P1.move()
@@ -147,8 +147,8 @@ while True:
     if pygame.sprite.spritecollideany(P1, enemies):  
         crash_sound.play()  # Дыбысты ойнату
 
-        DISPLAYSURF.fill(RED)  
-        DISPLAYSURF.blit(game_over, (30, 250))  # "Game Over" жазуы
+        screen.fill(RED)  
+        screen.blit(game_over, (30, 250))  # "Game Over" жазуы
         pygame.display.update()
 
         pygame.time.delay(2000) 
@@ -163,4 +163,4 @@ while True:
         all_sprites.add(new_coin)  
 
     pygame.display.update()
-    FramePerSec.tick(FPS)
+    clock.tick(FPS)

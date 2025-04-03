@@ -11,17 +11,22 @@ pygame.display.set_caption("Snake Game by Yenleak")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 30)
 
+#colors
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 
+
+#snake body and first position
 snake_pos = [100, 50]
 snake_body = [[100, 50], [90, 50], [80, 50]]
 snake_direction = "RIGHT"
 change_to = snake_direction
 speed = 15
 
+
+#here is a random food distribution
 def generate_food():
     while True:
         pos = [random.randrange(1, (WIDTH // 10)) * 10, random.randrange(1, (HEIGHT // 10)) * 10]
@@ -35,13 +40,14 @@ game_score = 0
 level = 1
 level_threshold = 3
 
-isRunning = True
+run = True
 
-while isRunning:
+while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            isRunning = False
+            run = False
             sys.exit()
+        #Control the snake with the keyboard
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and snake_direction != "DOWN":
                 change_to = "UP"
@@ -74,16 +80,20 @@ while isRunning:
         food_pos = generate_food()
     food_spawn = True
 
+    #If the snake goes out of bounds, the game ends
     if snake_pos[0] < 0 or snake_pos[0] >= WIDTH or snake_pos[1] < 0 or snake_pos[1] >= HEIGHT:
-        isRunning = False
+        run = False
 
+    #If the head touches its own body, the game ends
     for block in snake_body[1:]:
         if snake_pos == block:
-            isRunning = False
-
+            run = False
+    #The speed increases as the score increases.
     if game_score % level_threshold == 0 and game_score != 0:
         level = game_score // level_threshold + 1
         speed = 15 + (level - 1) * 3
+
+
 
     screen.fill(BLACK)
     for p in snake_body:
@@ -97,6 +107,7 @@ while isRunning:
 
     pygame.display.update()
     clock.tick(speed)
+
 
 game_over_text = font.render("GAME OVER", True, WHITE)
 game_over_rectangle = game_over_text.get_rect()
